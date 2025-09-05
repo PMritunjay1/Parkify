@@ -71,14 +71,19 @@ body {
 .card-body {
     padding-top: 5%;
 }
-
+.gop{
+    gap: 3rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
 .mb-2 {
     font-size: large;
     padding-bottom: 20px;
     margin: auto;
     margin-bottom: 5%;
 }
-
+.table-responsive {
+    padding: 10px;
+}
 .im {
     margin-top: 5rem;
 }
@@ -116,6 +121,10 @@ body {
     }
     .manager-footer {
         position: relative !important;
+    }
+    #helpMessagesTbody td:nth-child(2) { 
+        white-space: normal; 
+        min-width: 200px;    
     }
 }
 
