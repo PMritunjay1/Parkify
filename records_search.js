@@ -360,20 +360,41 @@ render();
 document.addEventListener('DOMContentLoaded', function () {
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     if (sendMessageBtn) {
-        sendMessageBtn.addEventListener('click', function () {
+        sendMessageBtn.addEventListener('click', async function () {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Message Sent!',
-                text: 'Thank you for contacting us. We will get back to you shortly.',
-                timer: 2500,
-                showConfirmButton: false
-            });
+            if (!name || !email || !message) {
+                Swal.fire('Error', 'Please fill in all fields.', 'error');
+                return;
+            }
+            if (!emailPattern.test(email)) {
+                Swal.fire('Error', 'Please enter a valid email address.', 'error');
+                return;
+            }
 
-            const contactModal = document.getElementById('contactModal');
-            const modal = bootstrap.Modal.getInstance(contactModal);
-            if (modal) {
-                modal.hide();
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+
+                if (!response.ok) throw new Error('Failed to send message.');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Message Sent!',
+                    text: 'Thank you for contacting us. We will get back to you shortly.'
+                });
+
+                const contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
+                if (contactModal) contactModal.hide();
+
+            } catch (error) {
+                Swal.fire('Error', 'Could not send message. Please try again later.', 'error');
             }
         });
     }
@@ -463,6 +484,32 @@ document.addEventListener('DOMContentLoaded', function () {
         logoutButton.addEventListener('click', function (event) {
             event.preventDefault();
             localStorage.removeItem('accessToken');
+            alert('You have been successfully logged out.');
+            window.location.href = './index.html';
+        });
+    }
+});
+// In a shared auth.js file or at the top of your page-specific scripts
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('accessToken');
+    const loginLink = document.getElementById('navLoginLink');
+    const logoutLink = document.getElementById('navLogoutLink');
+
+    if (token) {
+        // User is logged in
+        if (loginLink) loginLink.classList.add('d-none');
+        if (logoutLink) logoutLink.classList.remove('d-none');
+    } else {
+        // User is not logged in
+        if (loginLink) loginLink.classList.remove('d-none');
+        if (logoutLink) logoutLink.classList.add('d-none');
+    }
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userRole');
             alert('You have been successfully logged out.');
             window.location.href = './index.html';
         });
