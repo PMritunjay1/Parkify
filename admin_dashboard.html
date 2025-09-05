@@ -7,6 +7,14 @@
     <title>
         Admin Dashboard • Parkify
     </title>
+    <script>
+        (function () {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.replace('./index.html');
+            }
+        })();
+    </script>
     <!-- Google Font: Poppins -->
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700&amp;display=swap"
@@ -24,15 +32,6 @@
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/timezone.min.js"></script>
-    <script>
-        (function () {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-
-                window.location.replace('./index.html');
-            }
-        })();
-    </script>
 
     <!-- Global Theme Styles -->
     <link href="style.css" rel="stylesheet" />
@@ -152,25 +151,17 @@
         <div class="flex-grow-1 d-flex flex-column">
             <main class="main-panel container-fluid py-3">
                 <div class="bg-muted border-bottom">
-                    <nav aria-label="breadcrumb" class="container-max pill-nav mb-0 d-none d-md-flex">
-                        <span class="breadcrumb-item">
-                            <a href="./entry_gate.html">Entry Gate</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./exit_gate.html">Exit Gate</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./index.html">Login</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./admin_dashboard.html" class="active">Admin</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./records_search.html">Records</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./reports_page.html">Reports</a>
-                        </span>
+                    <nav aria-label="breadcrumb" class="container-max pill-nav ...">
+                        <span class="breadcrumb-item"><a href="./entry_gate.html">Entry Gate</a></span>
+                        <span class="breadcrumb-item"><a href="./exit_gate.html">Exit Gate</a></span>
+
+                        <span class="breadcrumb-item" id="navLoginLink"><a href="./index.html">Login</a></span>
+
+                        <span class="breadcrumb-item"><a href="./admin_dashboard.html" class="active">Admin</a></span>
+                        <span class="breadcrumb-item"><a href="./records_search.html">Records</a></span>
+                        <span class="breadcrumb-item"><a href="./reports_page.html">Reports</a></span>
+
+                        <span class="breadcrumb-item d-none" id="navLogoutLink"><a href="#">Logout</a></span>
                     </nav>
 
                     <div class="dropdown d-md-none p-2">
@@ -320,31 +311,20 @@
                 <!-- Main Content Area -->
                 <section class="row g-3" id="mainContentArea">
                     <!-- Left: Interactive Parking Map -->
-                    <div class="col-12 col-lg-5">
-                        <div class="card h-100">
+                    <div class="col-12 col-lg-5 d-flex flex-column gap-3">
+                        <div class="card gop h-100">
                             <div class="card-header">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="fa-solid fa-map-location-dot text-primary">
-                                    </i>
-                                    <span class="widget-title">
-                                        Interactive Parking Map
-                                    </span>
+                                    <i class="fa-solid fa-map-location-dot text-primary"></i>
+                                    <span class="widget-title">Interactive Parking Map</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
-                                    <label class="form-label mb-0 me-2">
-                                        Lot
-                                    </label>
+                                    <label class="form-label mb-0 me-2">Lot</label>
                                     <select aria-label="Select Parking Lot" class="form-select form-select-sm"
                                         id="lotSelector" style="min-width: 160px;">
-                                        <option selected="" value="A">
-                                            Lot A
-                                        </option>
-                                        <option value="B">
-                                            Lot B
-                                        </option>
-                                        <option value="C">
-                                            Lot C
-                                        </option>
+                                        <option selected="" value="A">Lot A</option>
+                                        <option value="B">Lot B</option>
+                                        <option value="C">Lot C</option>
                                     </select>
                                 </div>
                             </div>
@@ -353,24 +333,43 @@
                                     Click on a spot to view vehicle details. Green = Available, Red = Occupied.
                                 </div>
                                 <div aria-live="polite" class="parking-map-grid" id="parkingMap">
-                                </div><img alt="placeholder" class="mb-2 rounded im" src="lot.gif">
+                                </div>
                             </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-envelope-open-text text-info"></i>
+                                        <span class="widget-title">Recent Help Requests</span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-theme mb-0">
+
+                                            <thead>
+                                                <tr>
+                                                    <th>From</th>
+                                                    <th>Message</th>
+                                                    <th>Received</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="helpMessagesTbody">
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="card-footer d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-3 small">
-                                    <span>
-                                        <span class="legend-dot bg-success">
-                                        </span>
-                                        Available
-                                    </span>
-                                    <span>
-                                        <span class="legend-dot bg-danger">
-                                        </span>
-                                        Occupied
-                                    </span>
+                                    <span><span class="legend-dot bg-success"></span> Available</span>
+                                    <span><span class="legend-dot bg-danger"></span> Occupied</span>
                                 </div>
-                                <div class="small text-muted" id="mapSummary">
-                                    —
-                                </div>
+                                <div class="small text-muted" id="mapSummary">—</div>
                             </div>
                         </div>
                     </div>
@@ -519,6 +518,7 @@
                                 </a>
                             </div>
                         </div>
+
                     </div>
                 </section>
             </main>
