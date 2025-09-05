@@ -196,6 +196,34 @@ async function fetchLiveActivity() {
         console.error("Error fetching live activity:", error);
     }
 }
+async function fetchAndRenderHelpMessages() {
+    const tbody = document.getElementById('helpMessagesTbody');
+    try {
+        const messages = await fetchWithAuth('/admin/messages');
+        if (messages.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No recent help requests.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = messages.map(msg => `
+            <tr class="align-middle">
+                <td>
+                    <div><strong>${msg.name}</strong></div>
+                    <div class="small text-muted">${msg.email}</div>
+                </td>
+                <td style="white-space: normal; min-width: 250px;">${msg.message}</td>
+                <td>${fmtTime(msg.timestamp)}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-danger delete-message-btn" data-message-id="${msg.message_id}" title="Delete Message">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error("Error fetching help messages:", error);
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger">Could not load messages.</td></tr>`;
+    }
+}
 // --- EVENT LISTENERS ---
 document.getElementById('lotSelector').addEventListener('change', (e) => {
     const lotIdMap = { 'A': 1, 'B': 2, 'C': 3 };
@@ -325,6 +353,36 @@ document.addEventListener('click', (e) => {
         });
     }
 });
+// In admin_dashboard.html, add this new event listener
+document.addEventListener('click', async (e) => {
+    const deleteBtn = e.target.closest('.delete-message-btn');
+    if (!deleteBtn) return;
+
+    const messageId = deleteBtn.dataset.messageId;
+
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            await fetchWithAuth(`/admin/messages/${messageId}`, {
+                method: 'DELETE'
+            });
+            Swal.fire('Deleted!', 'The message has been deleted.', 'success');
+            fetchAndRenderHelpMessages(); // Refresh the list
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+            Swal.fire('Error', 'Could not delete the message.', 'error');
+        }
+    }
+});
 
 // --- INITIAL PAGE LOAD ---
 window.addEventListener('DOMContentLoaded', () => {
@@ -332,6 +390,7 @@ window.addEventListener('DOMContentLoaded', () => {
     renderMap();
     renderTable();
     fetchLiveActivity();
+    fetchAndRenderHelpMessages();
     setInterval(() => {
         updateKPIs();
         renderMap();
@@ -347,6 +406,32 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             console.log('Logout button clicked. Clearing session...');
             localStorage.removeItem('accessToken');
+            alert('You have been successfully logged out.');
+            window.location.href = './index.html';
+        });
+    }
+});
+// In a shared auth.js file or at the top of your page-specific scripts
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('accessToken');
+    const loginLink = document.getElementById('navLoginLink');
+    const logoutLink = document.getElementById('navLogoutLink');
+
+    if (token) {
+        // User is logged in
+        if (loginLink) loginLink.classList.add('d-none');
+        if (logoutLink) logoutLink.classList.remove('d-none');
+    } else {
+        // User is not logged in
+        if (loginLink) loginLink.classList.remove('d-none');
+        if (logoutLink) logoutLink.classList.add('d-none');
+    }
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userRole');
             alert('You have been successfully logged out.');
             window.location.href = './index.html';
         });
