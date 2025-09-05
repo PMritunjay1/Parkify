@@ -7,6 +7,14 @@
     <title>
         Report - Parkify
     </title>
+    <script>
+        (function () {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.replace('./index.html');
+            }
+        })();
+    </script>
     <link rel="icon" type="image/png" href="logo.png">
     <!-- Brand typography: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700&amp;display=swap"
@@ -30,15 +38,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
-    <script>
-        (function () {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-
-                window.location.replace('./index.html');
-            }
-        })();
-    </script>
 </head>
 
 <body class="min-vh-100 d-flex flex-column bg-muted border-bottom">
@@ -199,25 +198,17 @@
                 <!-- Breadcrumbs and page header -->
                 <div class="bg-muted border-bottom">
 
-                    <nav aria-label="breadcrumb" class="container-max pill-nav mb-0 d-none d-md-flex">
-                        <span class="breadcrumb-item">
-                            <a href="./entry_gate.html">Entry Gate</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./exit_gate.html">Exit Gate</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./index.html">Login</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./admin_dashboard.html">Admin</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./records_search.html">Records</a>
-                        </span>
-                        <span class="breadcrumb-item">
-                            <a href="./reports_page.html" class="active">Reports</a>
-                        </span>
+                    <nav aria-label="breadcrumb" class="container-max pill-nav ...">
+                        <span class="breadcrumb-item"><a href="./entry_gate.html">Entry Gate</a></span>
+                        <span class="breadcrumb-item"><a href="./exit_gate.html">Exit Gate</a></span>
+
+                        <span class="breadcrumb-item" id="navLoginLink"><a href="./index.html">Login</a></span>
+
+                        <span class="breadcrumb-item"><a href="./admin_dashboard.html" >Admin</a></span>
+                        <span class="breadcrumb-item"><a href="./records_search.html">Records</a></span>
+                        <span class="breadcrumb-item"><a href="./reports_page.html"class="active">Reports</a></span>
+
+                        <span class="breadcrumb-item d-none" id="navLogoutLink"><a href="#">Logout</a></span>
                     </nav>
 
                     <div class="dropdown d-md-none p-2">
