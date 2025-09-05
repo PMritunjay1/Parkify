@@ -7,6 +7,14 @@
     <title>
         Search Ticket &amp; Vehicle | Admin Console
     </title>
+    <script>
+        (function () {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.replace('./index.html');
+            }
+        })();
+    </script>
     <link rel="icon" type="image/png" href="logo.png">
     <!-- Brand Typography: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700&amp;display=swap"
@@ -22,15 +30,6 @@
     <!-- Page-specific CSS -->
     <link href="records_search.css" rel="stylesheet" />
     </link>
-    <script>
-        (function () {
-            const token = localStorage.getItem('accessToken');
-            if (!token) {
-
-                window.location.replace('./index.html');
-            }
-        })();
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/utc.min.js"></script>
@@ -168,25 +167,17 @@
         <main class="flex-grow-1" id="mainContent">
             <div class="bg-muted border-bottom">
 
-                <nav aria-label="breadcrumb" class="container-max pill-nav mb-0 d-none d-md-flex">
-                    <span class="breadcrumb-item">
-                        <a href="./entry_gate.html">Entry Gate</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="./exit_gate.html">Exit Gate</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="./index.html">Login</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="./admin_dashboard.html">Admin</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="./records_search.html" class="active">Records</a>
-                    </span>
-                    <span class="breadcrumb-item">
-                        <a href="./reports_page.html">Reports</a>
-                    </span>
+                <nav aria-label="breadcrumb" class="container-max pill-nav ...">
+                    <span class="breadcrumb-item"><a href="./entry_gate.html">Entry Gate</a></span>
+                    <span class="breadcrumb-item"><a href="./exit_gate.html">Exit Gate</a></span>
+
+                    <span class="breadcrumb-item" id="navLoginLink"><a href="./index.html">Login</a></span>
+
+                    <span class="breadcrumb-item"><a href="./admin_dashboard.html" >Admin</a></span>
+                    <span class="breadcrumb-item"><a href="./records_search.html" class="active">Records</a></span>
+                    <span class="breadcrumb-item"><a href="./reports_page.html">Reports</a></span>
+
+                    <span class="breadcrumb-item d-none" id="navLogoutLink"><a href="#">Logout</a></span>
                 </nav>
 
                 <div class="dropdown d-md-none p-2">
@@ -545,7 +536,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js">
     </script>
-    
+
     <script src="records_search.js" defer></script>
     <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -581,4 +572,5 @@
         </div>
     </div>
 </body>
+
 </html>
