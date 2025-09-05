@@ -427,22 +427,41 @@ document.querySelectorAll('.dropdown-menu [data-lang]').forEach(item => {
 document.addEventListener('DOMContentLoaded', function () {
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     if (sendMessageBtn) {
-        sendMessageBtn.addEventListener('click', function () {
-            // In a real app, you would gather form data and send it to your server here.
-            // Example: const name = document.getElementById('contactName').value;
+        sendMessageBtn.addEventListener('click', async function () {
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex
 
-            // For now, we'll just show a success message.
-            Swal.fire({
-                icon: 'success',
-                title: 'Message Sent!',
-                text: 'Thank you for contacting us. We will get back to you shortly.',
-                timer: 2500,
-                showConfirmButton: false
-            });
-            const contactModal = document.getElementById('contactModal');
-            const modal = bootstrap.Modal.getInstance(contactModal);
-            if (modal) {
-                modal.hide();
+            if (!name || !email || !message) {
+                Swal.fire('Error', 'Please fill in all fields.', 'error');
+                return;
+            }
+            if (!emailPattern.test(email)) {
+                Swal.fire('Error', 'Please enter a valid email address.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/contact/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, message })
+                });
+
+                if (!response.ok) throw new Error('Failed to send message.');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Message Sent!',
+                    text: 'Thank you for contacting us. We will get back to you shortly.'
+                });
+
+                const contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
+                if (contactModal) contactModal.hide();
+
+            } catch (error) {
+                Swal.fire('Error', 'Could not send message. Please try again later.', 'error');
             }
         });
     }
