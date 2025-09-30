@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://parkify-be6z.onrender.com';
+const API_BASE_URL = 'https://parking-system-fl5j.onrender.com';
 dayjs.extend(window.dayjs_plugin_utc);
 dayjs.extend(window.dayjs_plugin_timezone);
 async function fetchWithAuth(endpoint, options = {}) {
@@ -515,3 +515,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
