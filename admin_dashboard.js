@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://parkify-be6z.onrender.com';
+const API_BASE_URL = 'https://parking-system-fl5j.onrender.com';
 let allTickets = [];
 /**
  * Helper function to make authenticated API calls.
@@ -437,3 +437,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
