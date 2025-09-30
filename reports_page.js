@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://parkify-be6z.onrender.com';
+const API_BASE_URL = 'https://parking-system-fl5j.onrender.com';
 async function fetchWithAuth(endpoint, options = {}) {
     const token = localStorage.getItem('accessToken');
 
@@ -755,3 +755,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
